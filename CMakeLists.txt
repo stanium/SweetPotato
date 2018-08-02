@@ -11,11 +11,9 @@ project(SweetPotato)
 #SET(CMAKE_C_COMPILER c++)
 #endif()
 
-
-include_directories(include)
 #include_directories(PROC_ALARM/include)
 #include_directories(PROC_IOT/include)
-#include_directories(PROC_IOT/src)
+ADD_SUBDIRECTORY(SP_ClientTest)
 
 
 
