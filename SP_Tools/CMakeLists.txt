@@ -1,0 +1,3 @@
+
+ADD_EXECUTABLE(tes test.c)
+TARGET_LINK_LIBRARIES(tes pthread)
