@@ -1,0 +1,8 @@
+//
+// Created by sine on 18-8-23.
+//
+
+#ifndef SWEETPOTATO_THREADPOOL_H
+#define SWEETPOTATO_THREADPOOL_H
+
+#endif //SWEETPOTATO_THREADPOOL_H
