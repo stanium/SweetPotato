@@ -25,11 +25,11 @@ typedef struct rtp_header_t{
     unsigned extension:1;       //扩展标志
     unsigned csrc_cout:4;       //CSRC计数器
     unsigned marker:1;          //标记
-    unsigned payloader_type:7;  // 有效载荷类型
+    unsigned payloader_type:7;  //有效载荷类型
     uint16_t seq_num;           //报文的序列号
     uint32_t timestamp;         //时戳
     uint32_t ssrc;              //同步信源
-    uint32_t csrc[15];          // 特约信源
+    uint32_t csrc[15];          //特约信源
 
 }rtp_header;
 #endif //PROJECT_RTP_HEADER_H
