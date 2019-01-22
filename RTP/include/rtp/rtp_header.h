@@ -4,7 +4,7 @@
 
 #ifndef PROJECT_RTP_HEADER_H
 #define PROJECT_RTP_HEADER_H
-/* RFC 3550 section 5.1 - RTP Fixed Header Fields
+/** RFC 3550 section 5.1 - RTP Fixed Header Fields
     0                   1                   2                   3
     |0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

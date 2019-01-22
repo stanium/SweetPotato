@@ -1,0 +1,8 @@
+//
+// Created by sine on 19-1-22.
+//
+
+#ifndef SWEETPOTATO_CM_ALSA_AUDIO_H
+#define SWEETPOTATO_CM_ALSA_AUDIO_H
+
+#endif //SWEETPOTATO_CM_ALSA_AUDIO_H
