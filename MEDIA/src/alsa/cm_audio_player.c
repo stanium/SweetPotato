@@ -25,7 +25,7 @@ int cm_player_prepare(cm_alsa_dev *cm,int channels,int sample_rate,int periods){
     int dir;
     int frames;
     int err;
-    if((err=snd_pcm_open(cm->pcm,"default",SND_PCM_STREAM_CAPTURE,0))!=0){
+    if((err=snd_pcm_open(cm->pcm,"hw:1,3",SND_PCM_STREAM_PLAYBACK,0))!=0){
         printf("snd_pcm_open err\n");
         return -1;
     }

@@ -87,6 +87,10 @@ int cm_v4l2_init(){
             return -1;
         }
     }
+
+    for(int j=0;j<6;j++){
+
+    }
 }
 
 int cm_v4l2_start(cm_v4l2_dev *dev){
