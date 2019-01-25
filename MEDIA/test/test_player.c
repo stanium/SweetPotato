@@ -1,6 +1,8 @@
 //
 // Created by sine on 19-1-24.
 //
+#include "audio/alsa/cm_alsa_audio.h"
+#include "stdlib.h"
 
 int cm_player_prepare(cm_alsa_dev *cm,int channels,int sample_rate,int periods){
     //cm_alsa_dev *cm;
@@ -96,6 +98,12 @@ int cm_player_prepare(cm_alsa_dev *cm,int channels,int sample_rate,int periods){
     if((err=snd_pcm_prepare(cm->pcm))!=0){
 
     }
+
+}
+
+int main(){
+    cm_alsa_dev player;
+    memset(&player,0, sizeof(cm_alsa_dev));
 
 
 }
