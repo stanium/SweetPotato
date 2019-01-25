@@ -17,5 +17,9 @@ typedef struct cm_alsa_dev_t{
 
 }cm_alsa_dev;
 
+int cm_recorder_prepare(cm_alsa_dev *cm,int channels,int sample_rate,int periods);
+
+int cm_player_prepare(cm_alsa_dev *cm,int channels,int sample_rate,int periods);
+
 END_DECLS
 #endif //SWEETPOTATO_CM_ALSA_AUDIO_H
