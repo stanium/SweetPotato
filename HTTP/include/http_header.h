@@ -19,10 +19,10 @@ typedef enum http_header_type_e{
     http_type_Allow,
     http_type_Authorization,
     http_type_Cache_Control,
-    http_type_Cache_Control,
     http_type_Connection,
     http_type_Content_Encoding,
     http_type_Content_Language,
+    http_type_Content_Length,
     http_type_Content_Location,
     http_type_Content_MD5,
     http_type_Content_Range,
@@ -61,6 +61,106 @@ typedef enum http_header_type_e{
 
 }http_header_type;
 
+char * http_get_name_by_type(http_header_type type){
+    switch (type){
+        case http_type_Accept:
+            return "Accept";
+        case http_type_Accept_Charset:
+            return "Accept-Charset";
+        case http_type_Accept_Encoding:
+            return "Accept-Encoding";
+        case    http_type_Accept_Language:
+            return "Accept-Language";
+        case http_type_Accept_Ranges:
+            return "Accept-Ranges";
+        case      http_type_Age:
+            return "Age";
+        case     http_type_Allow:
+            return "Allow";
+        case    http_type_Authorization:
+            return "Authorization";
+        case    http_type_Cache_Control:
+            return "Cache-Control";
+        case    http_type_Connection:
+            return "Connection";
+        case    http_type_Content_Encoding:
+            return "Content-Encoding";
+        case    http_type_Content_Language:
+            return "Content-Language";
+        case    http_type_Content_Length:
+            return "Content-Length";
+        case    http_type_Content_Location:
+            return "Content-Location";
+        case    http_type_Content_MD5:
+            return "Content-MD5";
+        case    http_type_Content_Range:
+            return "Content-Range";
+        case    http_type_Content_Type:
+            return "Content-Type";
+        case    http_type_Date:
+            return "Date";
+        case    http_type_ETag:
+            return "ETag";
+        case    http_type_Expect:
+            return "Expect";
+        case    http_type_Expires:
+            return "Expires";
+        case    http_type_From:
+            return "From";
+        case    http_type_Host:
+            return Host"";
+        case    http_type_If_Match:
+            return "If-Match";
+        case    http_type_If_Modified_Since:
+            return "If-Modified-Since";
+        case    http_type_If_None_Match:
+            return "If-None-Match";
+        case    http_type_If_Range:
+            return "If-Range";
+        case    http_type_If_Unmodified_Since:
+            return "If-Unmodified-Since";
+        case    http_type_Last_Modified:
+            return "Last-Modified";
+        case    http_type_Location:
+            return "Location";
+        case    http_type_Max_Forwards:
+            return "Max-Forwards";
+        case    http_type_Pragma:
+            return "Pragma";
+        case    http_type_Proxy_Authenricate:
+            return "Proxy-Authenticate";
+        case    http_type_Proxy_Authorization:
+            return "Proxy-Authorization";
+        case    http_type_Range:
+            return "Range";
+        case    http_type_Referer:
+            return "Referer";
+        case    http_type_Retry_After:
+            return "Retry-After";
+        case    http_type_Server:
+            return "Server";
+        case    http_type_TE:
+            return "TE";
+        case    http_type_Trailer:
+            return "Trailer";
+        case    http_type_Transfer_Encoding:
+            return "Transfer-Encoding";
+        case    http_type_Upgrade:
+            return "Upgrade";
+        case    http_type_User_Agent:
+            return "User-Agent";
+        case    http_type_Vary:
+            return "Vary;
+        case    http_type_Via:
+            return "Via";
+        case    http_type_Warning:
+            return "Warning";
+        case    http_type_WWW_Authenticate:
+            return "WWW-Authenticate";
+        default:
+            return "unknow-header";
+    }
+}
 
 typedef struct http_message_t{
 
