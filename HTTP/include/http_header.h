@@ -61,6 +61,17 @@ typedef enum http_header_type_e{
 
 }http_header_type;
 
+typedef enum http_method_t{
+    http_method_OPTIONS,
+    http_method_GET,
+    http_method_HEAD,
+    http_method_POST,
+    http_method_PUT,
+    http_method_DELETE,
+    http_method_TRACE,
+    http_method_CONNECT,
+};
+
 char * http_get_name_by_type(http_header_type type){
     switch (type){
         case http_type_Accept:
