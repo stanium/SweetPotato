@@ -24,6 +24,65 @@
 <h4><a href=https://tools.ietf.org/html/rfc5389>RFC5389</a><br>
 默认端口号：3478<br>
 
+<span> STUN Message Structure</span>
+
+         0                   1                   2                   3
+         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |0 0|     STUN Message Type     |Message Length
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                         Magic Cookie
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |
+        |                     Transaction ID (96 bits)
+        |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+<span>STUN Attributes</span>
+
+         0                   1                   2                   3
+         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |         Type                  |            Length
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |                         Value (variable)                ....
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+         Comprehension-required range (0x0000-0x7FFF):
+             0x0000: (Reserved)
+             0x0001: MAPPED-ADDRESS
+             0x0002: (Reserved; was RESPONSE-ADDRESS)
+             0x0003: (Reserved; was CHANGE-ADDRESS)
+             0x0004: (Reserved; was SOURCE-ADDRESS)
+             0x0005: (Reserved; was CHANGED-ADDRESS)
+             0x0006: USERNAME
+             0x0007: (Reserved; was PASSWORD)
+             0x0008: MESSAGE-INTEGRITY
+             0x0009: ERROR-CODE
+             0x000A: UNKNOWN-ATTRIBUTES
+             0x000B: (Reserved; was REFLECTED-FROM)
+             0x0014: REALM
+             0x0015: NONCE
+             0x0020: XOR-MAPPED-ADDRESS
+
+           Comprehension-optional range (0x8000-0xFFFF)
+             0x8022: SOFTWARE
+             0x8023: ALTERNATE-SERVER
+             0x8028: FINGERPRINT
+
+<span>ERROR-CODE</span>
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |           Reserved, should be 0         |Class|     Number    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |      Reason Phrase (variable)                                ..
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
 <h2>TURN</h2>
 <h4><a href=https://tools.ietf.org/html/rfc5766>RFC5766</a></h4>
 <h2>ICE</h2>
