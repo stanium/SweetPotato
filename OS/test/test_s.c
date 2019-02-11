@@ -52,16 +52,17 @@ int server_TCP(){
         return -1;
     }
     struct sockaddr_in addr;
+    struct sockaddr_in client_addr;
     struct in_addr inAddr;
     memset(&addr,0,sizeof(addr));
-    addr.sin_port=htons(8080);
+    addr.sin_port=htons(10004);
     addr.sin_family=AF_INET;
     //addr.sin_addr.s_addr=htonl(INADDR_ANY);
     //
     // c4   01  a8  c0      <--addr.sin_addr.s_addr
     //  |    |   |   |
     // 196   1  168 192     <--192.168.1.196
-    addr.sin_addr.s_addr=inet_addr("192.168.1.196");
+    addr.sin_addr.s_addr=inet_addr("127.0.0.1");
     printf("s_addr=%x\n",addr.sin_addr.s_addr);
 
 
@@ -102,7 +103,7 @@ int server_TCP(){
         t.tv_usec=50*1000;
         ret=select(fd,&readmask,NULL,NULL,&t);
         if(ret==0){
-            break;
+            continue;
         }
 
         /**1、recv先等待发送缓冲的数据传送完毕，如果在发送缓冲的数据时出现错误，recv返回SOCKET_ERROR
@@ -110,10 +111,13 @@ int server_TCP(){
          *   直到数据收完。收完后，recv把接收缓冲的数据复制到buf，如果数据大于buf，就分多次接收。每次返回复制数据的字节数。
          *   如果复制出差，返回SOCKET_ERROR,如果等待接收数据时网络断了，返回0*/
         ret=recv(fd,buf, sizeof(buf),0);
+        printf("get data size=%d\n",ret);
         if(ret<0){
 
         } else if(ret==0){
 
+        } else{
+            printf("get data size=%d\n",ret);
         }
 
     }
@@ -137,7 +141,7 @@ int server_TCP2(){
 
     struct sockaddr_in sin;
     memset(&sin,0, sizeof(sin));
-    sin.sin_port=htons(8080);
+    sin.sin_port=htons(10004);
     sin.sin_family=AF_INET;
 #if 0
     /**这种方法监听明确的ip地址的网卡，但在有多网卡的时候用下面INADDR_ANY
@@ -145,6 +149,7 @@ int server_TCP2(){
     sin.sin_addr.s_addr=inet_addr("192.168.1.196");
 #else
     sin.sin_addr.s_addr=htonl(INADDR_ANY);
+  // sin.sin_addr.s_addr=inet_addr("127.0.0.1");
 #endif
     if(bind(fd,(struct sockaddr *)&sin,sizeof(sin))<0)
     {
@@ -152,30 +157,53 @@ int server_TCP2(){
         return -1;
     }
     /**监听的设备最多10个*/
-    if(listen(fd,10)<0){
-        printf("%s:listen fail\n"<__FUNCTION__);
+    if(listen(fd,1024)<0){
+        printf("%s:listen fail\n",__FUNCTION__);
         return -1;
     }
 
+    char buf[1024];
+    int ret;
     while (1){
         struct sockaddr_in inaddr;
+        socklen_t len= sizeof(inaddr);
         /** 当accept函数接受一个连接时，会返回一个新的socket标识符，
          * 后面的数据传输和读取就要通过这个新的socket编号来处理*/
-        int sd=accept(fd,&inaddr,sizeof(inaddr));
+        int sd=accept(fd,(struct sockaddr *)&inaddr,&len);
+       //int sd=accept(fd,(struct sockaddr *)NULL,NULL);
         if(sd<0){
             printf("%s:accept fail\n",__FUNCTION__);
+            continue;
         }
+
+      //  inaddr.sin_addr.s_addr
+
+       // getpeername(sd,(struct sockaddr *)&inaddr,sizeof(inaddr));
+        char *strAddr   =   inet_ntoa(inaddr.sin_addr);
+        printf("accept addr   =%s\n",inet_ntoa(inaddr.sin_addr));
+      // printf("accept addr=%s\n",strAddr);
+       /*
         pthread_t tid;
         if(pthread_create(&tid,NULL,(void *)handle,(void *)sd)<0){
             printf("%s:pthread_create fail\n",__FUNCTION__);
 
         }
+        */
+      ret=recv(sd,buf,1024,0);
+      if(ret<0){
+          printf("receive fail \n");
+          continue;
+      }
+
+      buf[1023]='\0';
+      printf("recv msg:%s\n",buf);
 
     }
 }
 
 int main(){
-    server_TCP();
+    //server_TCP();
+    server_TCP2();
     /*
     char ip[30];
     get_local_ip("enp0s31f6",ip);

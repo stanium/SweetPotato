@@ -62,6 +62,7 @@ int a(){
 }
 #define IPV4
 int test_os_tcp(){
+    char buf[1024];
 #ifdef IPV4
     int fd=socket(AF_INET,SOCK_STREAM,0);
     if(fd<0){
@@ -71,10 +72,11 @@ int test_os_tcp(){
 #if 1
     struct sockaddr_in addr;
     memset(&addr,0,sizeof(addr));
-    addr.sin_addr=;
+   // addr.sin_addr.s_addr=inet_addr("127.0.0.1");
+    inet_pton(AF_INET,"127.0.0.1",&addr.sin_addr);
     addr.sin_family=AF_INET;
-    addr.sin_port=htons(80);
-    addr.sin_zero=;
+    addr.sin_port=htons(10004);
+
 #else
     struct sockaddr addr;
     memset(&addr,0,sizeof(addr));
@@ -82,6 +84,7 @@ int test_os_tcp(){
     addr.sa_family=AF_INET;
 #endif
 //   inet_pton(AF_INET,)
+    printf("client addr=%s\n",inet_ntoa(addr.sin_addr));
 #endif
 #ifdef IPV6
     int fd=socket(AF_INET6,SOCK_STREAM,0);
@@ -101,6 +104,9 @@ int test_os_tcp(){
         printf("%s:connect fail\n",__FUNCTION__);
         return -1;
     }
+
+    stpncpy(buf,"hello",6);
+    send(fd,buf,6,0);
 
 }
 
@@ -188,7 +194,7 @@ int cm_getaddrinfo_ipv6(const char *url){
     for (curr = res; curr != NULL; curr = curr->ai_next)
     {
         inet_ntop(AF_INET,&(((struct sockaddr_in *)(curr->ai_addr))->sin_addr), ipstr, 16);
-        inet_ntop(AF_INET6&(((struct sockaddr_in6 *))))
+       // inet_ntop(AF_INET6&(((struct sockaddr_in6 *))))
         printf("%s\n", ipstr);
     }
 
@@ -201,5 +207,5 @@ int cm_getaddrinfo_ipv6(const char *url){
 
 int main()
 {
-    t1();
+    test_os_tcp();
 }
