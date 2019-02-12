@@ -101,7 +101,7 @@ int server_TCP(){
 
         t.tv_sec=5;
         t.tv_usec=50*1000;
-        ret=select(fd,&readmask,NULL,NULL,&t);
+        ret=select(fd+1,&readmask,NULL,NULL,&t);
         if(ret==0){
             continue;
         }
@@ -180,7 +180,7 @@ int server_TCP2(){
 
        // getpeername(sd,(struct sockaddr *)&inaddr,sizeof(inaddr));
         char *strAddr   =   inet_ntoa(inaddr.sin_addr);
-        printf("accept addr   =%s\n",inet_ntoa(inaddr.sin_addr));
+        printf("accept addr   =%s,sock fd=%d,accept return sd=%d\n",inet_ntoa(inaddr.sin_addr),fd,sd);
       // printf("accept addr=%s\n",strAddr);
        /*
         pthread_t tid;
@@ -201,9 +201,102 @@ int server_TCP2(){
     }
 }
 
+int server_udp()
+{
+    int fd;
+    int ret;
+    fd=socket(AF_INET,SOCK_DGRAM,0);
+    if(fd<0){
+        printf("create socket fail\n");
+        return -1;
+    }
+
+    struct sockaddr_in sin;
+    memset(&sin,0,sizeof(sin));
+    sin.sin_family=AF_INET;
+    sin.sin_addr.s_addr=htonl(INADDR_ANY);
+    sin.sin_port=htons(10005);
+
+    ret=bind(fd,(struct sockaddr *)&sin,sizeof(sin));
+    if(ret<0){
+        printf("%s : bind fail\n",__FUNCTION__);
+        return -1;
+    }
+
+    char buf[1024];
+    struct sockaddr_in client_addr;
+    socklen_t socklen;
+    memset(&client_addr,0, sizeof(client_addr));
+    socklen= sizeof(client_addr);
+    for(;;){
+        ret=recvfrom(fd,buf,1024,0,(struct sockaddr *)&client_addr,&socklen);
+        if(ret<0){
+            printf("%s : recvform err\n",__FUNCTION__);
+            continue;
+        }
+        buf[1023]='\0';
+        printf("recvfrom %s : data=%s\n",inet_ntoa(client_addr.sin_addr),buf);
+    }
+
+}
+
+int server_udp2()
+{
+    int fd,ret;
+    fd=socket(AF_INET,SOCK_DGRAM,0);
+    if(fd<0){
+        printf("%s :create socket fail\n",__FUNCTION__);
+        return -1;
+    }
+
+    struct sockaddr_in sin;
+    memset(&sin,0, sizeof(sin));
+    sin.sin_port=htons(10005);
+    sin.sin_family=AF_INET;
+    sin.sin_addr.s_addr=htonl(INADDR_ANY);
+    //sin.sin_addr.s_addr=inet_addr("127.0.0.1");
+    //inet_pton(fd,"127.0.0.1",&sin.sin_addr);
+
+    ret=bind(fd,(struct sockaddr *)&sin, sizeof(sin));
+    if(ret<0){
+        printf("%s : bind fail\n",__FUNCTION__);
+        return -1;
+    }
+
+    struct timeval timeval1;
+    memset(&timeval1,0, sizeof(timeval1));
+    struct sockaddr_in client_addr;
+    socklen_t socklen;
+    char buf[1024];
+    fd_set readfd;
+    for(;;){
+        FD_ZERO(&readfd);
+        FD_SET(fd,&readfd);
+        timeval1.tv_sec=5;
+        ret=select(fd+1,&readfd,NULL,NULL,&timeval1);
+        if(ret<0){
+            printf("%s: select fail\n",__FUNCTION__);
+            continue;
+        } else if(ret==0){
+            printf("%s:select timeout\n",__FUNCTION__);
+            continue;
+        }
+        ret=recvfrom(fd,buf,1024,0,(struct sockaddr *)&client_addr,&socklen);
+        if(ret<0){
+            printf("recvform fail\n");
+            continue;
+        }
+
+        buf[1023]='\0';
+        printf("recvfrom %s : data=%s\n",inet_ntoa(client_addr.sin_addr),buf);
+    }
+}
+
 int main(){
-    //server_TCP();
-    server_TCP2();
+   // server_TCP();
+    //server_TCP2();
+    //server_udp();
+    server_udp2();
     /*
     char ip[30];
     get_local_ip("enp0s31f6",ip);

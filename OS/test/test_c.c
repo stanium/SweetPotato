@@ -57,7 +57,7 @@ int a(){
     struct hostent *hent;
     gethostname(hname, sizeof(hname));
     hent=gethostbyname("www.qq.com");
-    printf("hostname:%s\n",hent->h_name);
+    printf("hostname: %s\n",hent->h_name);
 
 }
 #define IPV4
@@ -84,7 +84,7 @@ int test_os_tcp(){
     addr.sa_family=AF_INET;
 #endif
 //   inet_pton(AF_INET,)
-    printf("client addr=%s\n",inet_ntoa(addr.sin_addr));
+    printf("client addr=%s,sock fd=%d\n",inet_ntoa(addr.sin_addr),fd);
 #endif
 #ifdef IPV6
     int fd=socket(AF_INET6,SOCK_STREAM,0);
@@ -105,8 +105,9 @@ int test_os_tcp(){
         return -1;
     }
 
-    stpncpy(buf,"hello",6);
-    send(fd,buf,6,0);
+    stpncpy(buf,"hello fucu",11);
+    send(fd,buf,11,0);
+
 
 }
 
@@ -123,7 +124,19 @@ int test_os_udp(){
         printf("create socket fail\n");
     }
 #endif
+    struct sockaddr_in sin;
+    memset(&sin,0,sizeof(sin));
+    sin.sin_family=AF_INET;
+    sin.sin_port=htons(10005);
+    //sin.sin_addr.s_addr=inet_addr("127.0.0.1");
+    inet_pton(AF_INET,"127.0.0.1",&sin.sin_addr);
+    char buf[1024];
+    stpcpy(buf,"test udp");
+    sendto(fd,buf,11,0,(struct sockaddr *)&sin, sizeof(sin));
 }
+
+
+
 
 int test_os_raw(){
 #ifdef IPV4
@@ -207,5 +220,8 @@ int cm_getaddrinfo_ipv6(const char *url){
 
 int main()
 {
-    test_os_tcp();
+    //test_os_tcp();
+    //test_os_udp();
+    cm_getaddrinfo("www.baidu.com",NULL);
+    //a();
 }
