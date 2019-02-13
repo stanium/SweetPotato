@@ -3,6 +3,11 @@
 <h2>URI</h2>
 <h5>Universal Resource Identifier 统一资源标志符</h5>
 <p>格式：协议名称://域名.根域名/目录/文件名.后缀</p>
+<ol>
+<li>[scheme:]scheme-specific-part[#fragment]</li>
+<li>[scheme:][//authority][path][?query][#fragment]</li>
+<li>[scheme:][//host:port][path][?query][#fragment]</li>
+</ol>
 <h2>URL</h2>
 <h5>Universal Resource Locator 统一资源定位符</h5>
 <h2>URN</h2>
