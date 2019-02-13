@@ -10,6 +10,7 @@
 </ol>
 <h2>URL</h2>
 <h5>Universal Resource Locator 统一资源定位符</h5>
+https://blog.csdn.net/wq6ylg08/article/details/82868595
 <h2>URN</h2>
 <h5> Universal Resource Name 统一资源名称</h5>
 
