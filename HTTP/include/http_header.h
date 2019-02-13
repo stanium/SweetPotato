@@ -119,7 +119,7 @@ char * http_get_name_by_type(http_header_type type){
         case    http_type_From:
             return "From";
         case    http_type_Host:
-            return Host"";
+            return "Host";
         case    http_type_If_Match:
             return "If-Match";
         case    http_type_If_Modified_Since:
@@ -161,7 +161,7 @@ char * http_get_name_by_type(http_header_type type){
         case    http_type_User_Agent:
             return "User-Agent";
         case    http_type_Vary:
-            return "Vary;
+            return "Vary";
         case    http_type_Via:
             return "Via";
         case    http_type_Warning:
@@ -177,6 +177,6 @@ typedef struct http_message_t{
 
 }http_message;
 
-int http_request();
-int http_response();
+//int http_request();
+//int http_response();
 #endif //PROJECT_HTTP_HEADER_H

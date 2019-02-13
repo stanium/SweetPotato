@@ -1,10 +1,17 @@
 <h2> <a href='https://tools.ietf.org/html/rfc2616#section-14.5'>参考地址</a>
 </h2>
+<h2>URI</h2>
+<h5>Universal Resource Identifier 统一资源标志符</h5>
+<p>格式：协议名称://域名.根域名/目录/文件名.后缀</p>
+<h2>URL</h2>
+<h5>Universal Resource Locator 统一资源定位符</h5>
+<h2>URN</h2>
+<h5> Universal Resource Name 统一资源名称</h5>
+
 <h2> Http Message </h2>
 
 <h3>Message Types</h3>
-<p>
-HTTP-message    = Request|Response<br>
+<p>HTTP-message    = Request|Response</p>
 
 <h5>generic-message格式</h5>
 
@@ -12,7 +19,6 @@ start-line<br>
 *(message-header CRLF)<br>
 CRLF<br>
 \[message-body\]<br>
-</p>
 
 <h3>Message Headers</h3>
 <table>
