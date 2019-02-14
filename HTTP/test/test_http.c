@@ -9,18 +9,128 @@
 #include "malloc.h"
 #include "memory.h"
 #include "../include/http_header.h"
-/**
- * reserved    = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" |
-                    "$" | ","
+// relativeURI   = ( ("//" (server | reg_name )[ ("/"  ((*pchar *( ";" param )) *( "/" (*pchar *( ";" param )) ))) ])
+// | abs_path
+// | rel_path ) [ "?" query ]
+/**URI BNF
+  URI-reference = [ absoluteURI | relativeURI ] [ "#" fragment ]
+  absoluteURI   = scheme ":" ( hier_part | opaque_part )
+  relativeURI   = ( net_path | abs_path | rel_path ) [ "?" query ]
+
+  hier_part     = ( net_path | abs_path ) [ "?" query ]
+  opaque_part   = uric_no_slash *uric
+
+  uric_no_slash = unreserved | escaped | ";" | "?" | ":" | "@" |
+                  "&" | "=" | "+" | "$" | ","
+
+  net_path      = "//" authority [ abs_path ]
+  abs_path      = "/"  path_segments
+  rel_path      = rel_segment [ abs_path ]
+
+  rel_segment   = 1*( unreserved | escaped |
+                      ";" | "@" | "&" | "=" | "+" | "$" | "," )
+
+  scheme        = alpha *( alpha | digit | "+" | "-" | "." )
+
+  authority     = server | reg_name
+
+  reg_name      = 1*( unreserved | escaped | "$" | "," |
+                      ";" | ":" | "@" | "&" | "=" | "+" )
+
+  server        = [ [ userinfo "@" ] hostport ]
+  userinfo      = *( unreserved | escaped |
+                     ";" | ":" | "&" | "=" | "+" | "$" | "," )
+
+  hostport      = host [ ":" port ]
+  host          = hostname | IPv4address
+  hostname      = *( domainlabel "." ) toplabel [ "." ]
+  domainlabel   = alphanum | alphanum *( alphanum | "-" ) alphanum
+  toplabel      = alpha | alpha *( alphanum | "-" ) alphanum
+  IPv4address   = 1*digit "." 1*digit "." 1*digit "." 1*digit
+  port          = *digit
+
+  path          = [ abs_path | opaque_part ]
+  path_segments = segment *( "/" segment )
+  segment       = *pchar *( ";" param )
+  param         = *pchar
+  pchar         = unreserved | escaped |
+                  ":" | "@" | "&" | "=" | "+" | "$" | ","
+
+  query         = *uric
+
+  fragment      = *uric
+
+  uric          = reserved | unreserved | escaped
+  reserved      = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" |
+                  "$" | ","
+  unreserved    = alphanum | mark
+  mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" |
+                  "(" | ")"
+
+ //转义
+  escaped       = "%" hex hex
+  hex           = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+                          "a" | "b" | "c" | "d" | "e" | "f"
+
+  alphanum      = alpha | digit
+  alpha         = lowalpha | upalpha
+
+  lowalpha = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" |
+             "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" |
+             "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+  upalpha  = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" |
+             "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" |
+             "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+  digit    = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+             "8" | "9"
+
  */
 typedef struct url_t{
     char *scheme;   //协议
+    char *username;
+    char *password;
     char *host;     //
-    char *port;     //端口
+    unsigned int port;     //端口
+    char *file;
+    //char *url;
+    //char *noauth_url;
 }URL;
+/**
+ * 字符串转义
+ * @param out
+ * @param in
+ * @return
+ */
+int url_escape_string(char *out,char *in){
+    int len=strlen(in);
+}
 
+int url_unescape_string(char *out,char *in){
+
+}
+
+/**从一个url字符串提取出组成URL的各个部分
+ * scheme =( lowalpha | upalpha) *( lowalpha | upalpha | digit | "+" | "-" | "." )
+ *
+ * http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
+ * @param url
+ * @return
+ */
 URL * new_url(char *url){
     URL *n_url;
+    char *escape_url;
+    char *pt1;
+    int len;
+    if(url==NULL)return NULL;
+    len=strlen(url);
+
+
+    if((pt1=strstr(escape_url,"://"))==NULL){
+
+    }
+
+    n_url->scheme=malloc()
+
 }
 int test_http_get(){
 
@@ -78,7 +188,8 @@ int test_http()
 }
 
 int main(){
-    test_http();
+   // test_http();
+    printf("uint =%d,ulong =%d\n",sizeof(unsigned int), sizeof(unsigned long));
 }
 
 

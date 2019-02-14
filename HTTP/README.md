@@ -2,15 +2,26 @@
 </h2>
 <h2>URI</h2>
 <h5>Universal Resource Identifier 统一资源标志符</h5>
+<p>参考：https://tools.ietf.org/html/rfc2396</p>
+<!--
 <p>格式：协议名称://域名.根域名/目录/文件名.后缀</p>
 <ol>
 <li>[scheme:]scheme-specific-part[#fragment]</li>
 <li>[scheme:][//authority][path][?query][#fragment]</li>
 <li>[scheme:][//host:port][path][?query][#fragment]</li>
+-->
 </ol>
+<span >URI 正则表达式表示 </span>
+
+          ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+           12            3  4          5       6  7        8 9
+
 <h2>URL</h2>
 <h5>Universal Resource Locator 统一资源定位符</h5>
-https://blog.csdn.net/wq6ylg08/article/details/82868595
+<pre>
+    http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
+    https://blog.csdn.net/wq6ylg08/article/details/82868595
+</pre>
 <h2>URN</h2>
 <h5> Universal Resource Name 统一资源名称</h5>
 
