@@ -224,7 +224,7 @@ cm_mime_type mime_type{
         { ".xlsx"           , "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
         { ".xlt"            , "application/vnd.ms-excel" },
         { ".xlw"            , "application/vnd.ms-excel" },
-        {".xml"             ,"application/xml"},
+        {".xml"             , "application/xml"},
         { ".xpi"            , "application/x-xpinstall" },
         { ".yz1"            , "application/x-yz1" },
         { ".z"              , "application/x-compress" },

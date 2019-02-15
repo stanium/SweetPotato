@@ -9,9 +9,54 @@
 #include "malloc.h"
 #include "memory.h"
 #include "../include/http_header.h"
+#include "unistd.h"
+#include "pthread.h"
 // relativeURI   = ( ("//" (server | reg_name )[ ("/"  ((*pchar *( ";" param )) *( "/" (*pchar *( ";" param )) ))) ])
 // | abs_path
 // | rel_path ) [ "?" query ]
+/**absoluteURI**/
+/*
+<hier_part>
+<net_path>
+///scheme ":"( "//" (server | reg_name) [ abs_path ])[ "?" query ]
+ <server>
+ ///scheme ":"( "//" ([ [ userinfo "@" ] hostport ]) [ abs_path ])[ "?" query ]
+
+ </server>
+ <reg_name>
+ ///scheme ":"( "//" 1*( unreserved | escaped | "$" | "," |";" | ":" | "@" | "&" | "=" | "+" ) [ abs_path ])[ "?" query ]
+ </reg_name>
+</net_path>
+
+<abs_path>
+///scheme ":"( "/"  path_segments ) [ "?" query ]
+</abs_path>
+</hier_part>
+
+<<opaque_part>
+///scheme ":"( unreserved | escaped | ";" | "?" | ":" | "@" |
+//                  "&" | "=" | "+" | "$" | ",")( *uric)
+</opaque_part>
+*/
+/**relativeURI**/
+/*
+ ( net_path | abs_path | rel_path ) [ "?" query ]
+ <net_path>
+ <server>
+ "//" [ [ userinfo "@" ] hostport ] [ abs_path ] [ "?" query ]
+ </server>
+ <reg_name>
+"//" 1*( unreserved | escaped | "$" | "," |";" | ":" | "@" | "&" | "=" | "+" ) [ abs_path ] [ "?" query ]
+ </reg_name>
+ </net_path>
+ <abs_path>
+ "/"  (segment *( "/" segment )) [ "?" query ]
+ </abs_path>
+ <rel_path>
+ 1*( unreserved | escaped |";" | "@" | "&" | "=" | "+" | "$" | "," ) [ abs_path ][ "?" query ]
+ </rel_path>
+ */
+
 /**URI BNF
   URI-reference = [ absoluteURI | relativeURI ] [ "#" fragment ]
   absoluteURI   = scheme ":" ( hier_part | opaque_part )
@@ -95,6 +140,23 @@ typedef struct url_t{
     //char *url;
     //char *noauth_url;
 }URL;
+
+/*
+typedef struct mpeg_header{
+    int flags:11;
+    int id:2;
+    int seq:2;
+    int protection:1;
+    int index_bsp:4;
+    int index_sample:2;
+    int padding:1;
+    int pb:1;
+    int channel_mode:2;
+    int extention:2;
+    int version:1;
+    int obit:1;
+};
+ */
 /**
  * 字符串转义
  * @param out
@@ -129,7 +191,7 @@ URL * new_url(char *url){
 
     }
 
-    n_url->scheme=malloc()
+//    n_url->scheme=malloc()
 
 }
 int test_http_get(){
@@ -139,6 +201,24 @@ int test_http_get(){
 int test_http_post(){
 
 }
+
+FILE *file=NULL;
+static pthread_cond_t pcond=PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t pmutex=PTHREAD_MUTEX_INITIALIZER;
+char rbuf[1024*10];
+int count;
+void * thread_test(void *arg){
+    pthread_mutex_lock(&pmutex);
+    while (1){
+        pthread_cond_wait(&pcond,&pmutex);
+        fwrite(rbuf,count,1,file);
+
+    }
+    pthread_mutex_unlock(&pmutex);
+
+
+}
+
 int test_http()
 {
     int fd;
@@ -146,9 +226,10 @@ int test_http()
     if(fd<0){
         printf("%s :create fail\n",__FUNCTION__);
     }
-
+//http://lhttp.qingting.fm/live/386/64k.mp3
    // struct hostent *htent=gethostbyname("www.lhttp.qingting.fm");
    struct  hostent *htent=gethostbyname2("lhttp.qingting.fm",AF_INET);
+   // struct  hostent *htent=gethostbyname2("www.baidu.com",AF_INET);
     if(htent==NULL){
         printf("%s :gethostbyname fail\n",__FUNCTION__);
         return -EFAULT;
@@ -170,16 +251,76 @@ int test_http()
     if(ret<0){
         printf("%s : connect fail\n",__FUNCTION__);
         return -1;
+    } else{
+        printf("connect to %s...\n",inet_ntoa(des_addr.sin_addr));
     }
 
+
     //http_header_type header_type=http_ty
-    char *sbuf="Get http://lhttp.qingting.fm/live/386/64k.mp3 HTTP/1.1\r\n"
+
+    char *sbuf="GET /live/386/64k.mp3 HTTP/1.1\r\n"
+               "Host: lhttp.qingting.fm\r\n"
+               "Connection: keep-alive\r\n"
+               "Upgrade-Insecure-Requests: 1\r\n"
+      //         "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/71.0.3578.98 Chrome/71.0.3578.98 Safari/537.36\r\n"
+               "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8\r\n"
+               "Accept-Encoding: gzip, deflate\r\n"
+               "Accept-Language: zh-CN,zh;q=0.5\r\n"
+               "\r\n";
+               /*
+    char *sbuf="GET http://www.baidu.com HTTP/1.1\r\n"
                "Accept-Language: zh-Hans-CN,zh-Hans;q=0.5\r\n"
-               "Host: www.baidu.com\r\n"
+               "Host: wwww.baidu.com\r\n"
                "Connection: Keep-Alive\r\n";
+               */
     int len=strlen(sbuf);
-    printf("sbuf len=%d\n",len);
-   // send(fd,sbuf)
+    printf("sbuf len=%d,data=%s\n",len,sbuf);
+    ret=send(fd,sbuf,len,0);
+    if(ret<0){
+        printf("send fail\n");
+        return -1;
+    }
+
+    printf("send data size=%d\n",ret);
+
+
+    file=fopen("test.mp3","w+");
+    if(file==NULL){
+        printf("fopen fail\n");
+        return -1;
+    }
+    pthread_t ptd;
+    int pd=pthread_create(&ptd,NULL,thread_test,NULL);
+    if(pd<0){
+        printf("pthread_create fail\n");
+        return -1;
+    }
+    char *p=rbuf;
+     count=0;
+    while (1){
+        ret=recv(fd,p,1024,0);
+        if(ret<=0){
+            printf("recv err\n");
+            sleep(5);
+            continue;
+        }
+        p=p+ret;
+        count=count+ret;
+       // printf("count=%d,ret=%d\n",count,ret);
+        if(10240-count<=1024){
+            pthread_mutex_lock(&pmutex);
+            count=0;
+            p=rbuf;
+            pthread_cond_signal(&pcond);
+            pthread_mutex_unlock(&pmutex);
+        }
+        //rbuf[1023]='\0';
+        //printf("ret=%d,recv=%s\n",ret,rbuf);
+
+    }
+
+
+
 
 
 
@@ -188,8 +329,8 @@ int test_http()
 }
 
 int main(){
-   // test_http();
-    printf("uint =%d,ulong =%d\n",sizeof(unsigned int), sizeof(unsigned long));
+    test_http();
+    //printf("uint =%d,ulong =%d\n",sizeof(unsigned int), sizeof(unsigned long));
 }
 
 

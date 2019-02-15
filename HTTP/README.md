@@ -1,3 +1,10 @@
+<head>
+<style type="text/css">
+
+</style>
+</head>
+<!-- ------------------------------------------------------------------>
+<body>
 <h2> <a href='https://tools.ietf.org/html/rfc2616#section-14.5'>参考地址</a>
 </h2>
 <h2>URI</h2>
@@ -13,18 +20,36 @@
 </ol>
 <span >URI 正则表达式表示 </span>
 
-          ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
-           12            3  4          5       6  7        8 9
+    ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+     12            3  4          5       6  7        8 9
 
 <h2>URL</h2>
-<h5>Universal Resource Locator 统一资源定位符</h5>
+<h5><a href=https://tools.ietf.org/html/rfc1738>Universal Resource Locator 统一资源定位符</a></h5>
 <pre>
     http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
     https://blog.csdn.net/wq6ylg08/article/details/82868595
 </pre>
+
+<h5><a href=https://tools.ietf.org/html/rfc1808> Relative Uniform Resource Locators</a></h5>
 <h2>URN</h2>
+
 <h5> Universal Resource Name 统一资源名称</h5>
 
+<h2>HTTP Request</h2>
+<pre>
+    Request = Request-Line
+              *(( general-header| request-header| entity-header ) CRLF)
+              CRLF
+              [message-body]
+</pre>
+
+<h2>HTTP Response</h2>
+<pre>
+    Response = Status-Line
+                *(( general-header|response-header| entity-header ) CRLF)
+               CRLF
+               [message-body]
+</pre>
 <h2> Http Message </h2>
 
 <h3>Message Types</h3>
@@ -38,6 +63,7 @@ CRLF<br>
 \[message-body\]<br>
 
 <h3>Message Headers</h3>
+
 <table>
     <tr>
      <th>general-header</th>
@@ -183,7 +209,7 @@ CRLF<br>
 505 HTTP Version Not Supported<br>
 </p>
 
-
+</body>
 
 
 
