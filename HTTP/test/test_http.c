@@ -1,6 +1,8 @@
 //
 // Created by sin on 19-1-28.
 //
+#include <stdlib.h>
+#include <fcntl.h>
 #include "sys/socket.h"
 #include "arpa/inet.h"
 #include "stdio.h"
@@ -11,6 +13,7 @@
 #include "../include/http_header.h"
 #include "unistd.h"
 #include "pthread.h"
+#include "sys/mman.h"
 // relativeURI   = ( ("//" (server | reg_name )[ ("/"  ((*pchar *( ";" param )) *( "/" (*pchar *( ";" param )) ))) ])
 // | abs_path
 // | rel_path ) [ "?" query ]
@@ -205,18 +208,41 @@ int test_http_post(){
 FILE *file=NULL;
 static pthread_cond_t pcond=PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t pmutex=PTHREAD_MUTEX_INITIALIZER;
-char rbuf[1024*10];
+#define MAX_BUF 2048*100
+char rbuf[MAX_BUF*4];
 int count;
+struct audio_msg{
+    char *position;
+    int wflag;
+    int size;
+};
+struct audio_msg amsg;
 void * thread_test(void *arg){
-    pthread_mutex_lock(&pmutex);
+   // pthread_mutex_lock(&pmutex);
     while (1){
         pthread_cond_wait(&pcond,&pmutex);
-        fwrite(rbuf,count,1,file);
-
+       // pthread_mutex_lock(&pmutex);
+        if(amsg.wflag==1){
+            printf("write start\n");
+            fwrite(amsg.position,amsg.size,1,file);
+            amsg.wflag=0;
+            printf("write finish\n");
+        }
+        //count=0;
+      //  pthread_mutex_unlock(&pmutex);
     }
-    pthread_mutex_unlock(&pmutex);
+  //  pthread_mutex_unlock(&pmutex);
 
 
+}
+
+typedef struct cache_t{
+    char *buf;
+    int size;
+    int sector;
+}cache;
+int cache_init(int size,int sector){
+    //int ret=mmap(NULL,,PROT_READ|PROT_WRITE,MAP_SHARED,);
 }
 
 int test_http()
@@ -246,7 +272,7 @@ int test_http()
     des_addr.sin_family=AF_INET;
     des_addr.sin_port=htons(80);
     des_addr.sin_addr=*(struct in_addr *)htent->h_addr_list[0];
-
+  //  fcntl( fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK );
     int ret=connect(fd,(struct sockaddr *)&des_addr, sizeof(des_addr));
     if(ret<0){
         printf("%s : connect fail\n",__FUNCTION__);
@@ -289,16 +315,19 @@ int test_http()
         printf("fopen fail\n");
         return -1;
     }
+    /*
     pthread_t ptd;
     int pd=pthread_create(&ptd,NULL,thread_test,NULL);
     if(pd<0){
         printf("pthread_create fail\n");
         return -1;
     }
+     */
     char *p=rbuf;
      count=0;
+     int bnum=1;
     while (1){
-        ret=recv(fd,p,1024,0);
+        ret=recv(fd,p,2048,0);
         if(ret<=0){
             printf("recv err\n");
             sleep(5);
@@ -306,13 +335,30 @@ int test_http()
         }
         p=p+ret;
         count=count+ret;
-       // printf("count=%d,ret=%d\n",count,ret);
-        if(10240-count<=1024){
-            pthread_mutex_lock(&pmutex);
+       // printf("count=%d,ret=%d,p=0x%x\n",count,ret,p);
+
+        if(MAX_BUF-count<=1460){
+
+#if 0
+          //  pthread_mutex_lock(&pmutex);
+            amsg.size=count;
+            amsg.position=p-count;
+            amsg.wflag=1;
+
+            p=p-count+MAX_BUF;
+            bnum++;
+            if(bnum==4){
+                bnum=1;
+                p=rbuf;
+            }
             count=0;
-            p=rbuf;
             pthread_cond_signal(&pcond);
-            pthread_mutex_unlock(&pmutex);
+          //  pthread_mutex_unlock(&pmutex);
+#else
+            int sz=fwrite(rbuf,count,1,file);
+            printf("write ok\n");
+            exit(1);
+#endif
         }
         //rbuf[1023]='\0';
         //printf("ret=%d,recv=%s\n",ret,rbuf);
