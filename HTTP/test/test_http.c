@@ -14,6 +14,8 @@
 #include "unistd.h"
 #include "pthread.h"
 #include "sys/mman.h"
+#include "sys/inotify.h"
+#include "poll.h"
 // relativeURI   = ( ("//" (server | reg_name )[ ("/"  ((*pchar *( ";" param )) *( "/" (*pchar *( ";" param )) ))) ])
 // | abs_path
 // | rel_path ) [ "?" query ]
@@ -374,8 +376,118 @@ int test_http()
 
 }
 
+struct test_st{
+    int b;
+};
+
+struct test_st *st;
+int test_calloc_(){
+   // st=(struct test_st *)calloc(1,sizeof(st[0]));
+    printf("st[0] size=%d,st size=%d\n",sizeof(st[0]), sizeof(st));
+
+}
+
+int test_inotify_FileOrDir(){
+#define PATH "/home/sine/tests/test"
+    struct pollfd *pollfd1,*new_pollfd;
+
+    char devname[4096];
+    char *filename;
+    nfds_t nfds;
+    pollfd1=calloc(1,sizeof(pollfd1[0]));
+    pollfd1->fd=inotify_init();
+    pollfd1->events=POLLIN;
+    int ret=inotify_add_watch(pollfd1->fd,PATH,IN_CREATE|IN_DELETE);
+    if(ret<0){
+        printf("could not add watch ,%s\n",strerror(errno));
+        return -1;
+    }
+
+//    ret=open(fd,O_RDWR);
+//    if(ret<0){
+//        printf("open fail,%s\n",strerror(errno));
+//        return -1;
+//    }
+
+    nfds=1;
+    char eventbuf[512];
+    struct inotify_event *event;
+    while (1) {
+        printf("nfds 1=%d\n",nfds);
+        poll(pollfd1,nfds,-1);
+       // printf("nfds 1=%d\n",nfds);
+        if(pollfd1[0].events&POLLIN) {
+            printf("can read\n");
+            ret = read(pollfd1[0].fd, eventbuf, sizeof(eventbuf));
+            if (ret < (int) sizeof(*event)) {
+                printf("could not get event,%s\n", strerror(errno));
+                //return -1;
+            }
+            strcpy(devname,PATH);
+            filename=devname+strlen(devname);
+            *filename++='/';
+            if(ret>=(int) sizeof(*event)){
+                event=(struct inotify_event *)eventbuf;
+                if(event->len){
+                    printf("file name=%s\n",event->name);
+                    if(event->mask&IN_CREATE){
+                        printf("event of creatint a new file happen\n");
+                        strcpy(filename,event->name);
+                        printf("devname=%s\n",devname);
+                        int sd=open(devname,O_RDWR);
+                        if(sd<0){
+                            printf("open fail,%s\n",strerror(errno));
+                        }
+                        new_pollfd=(struct pollfd*)realloc(pollfd1, sizeof(pollfd1[0])*(nfds+2));
+                        if(new_pollfd==NULL){
+                            printf("realloc fail\n");
+                            continue;
+                        }
+
+                        printf("nfds=%d\n",nfds);
+                        pollfd1=new_pollfd;
+                        pollfd1[nfds].fd=sd;
+                        pollfd1[nfds].events=POLLIN;
+                        nfds++;
+/*
+                        pollfd1[nfds].fd=inotify_init();
+                        pollfd1[nfds].events=POLLIN;
+                        ret=inotify_add_watch(pollfd1[nfds].fd,devname,IN_MODIFY);
+                        printf("inotify_add_watch:ndfs=%d,fd=%d,devname=%s\n",nfds,pollfd1[nfds].fd,devname);
+                        if(ret<0){
+                            printf("could not add watch ,%s\n",strerror(errno));
+                        //    return -1;
+                        }
+                        nfds++;
+*/
+
+                    } else if(event->mask&IN_DELETE){
+                        printf("event of deleting a file happen\n");
+                    }
+                }
+            }
+
+        }
+
+        for(int i=1;i<nfds;i++){
+            if(pollfd1[i].events){
+                if(pollfd1[i].events&POLLIN){
+                    printf("get a new read event,%d\n",i);
+                }
+            }
+        }
+    }
+
+}
+
+int test_inotify_File(){
+#define PATH="/home/sine/"
+
+}
 int main(){
-    test_http();
+   // test_http();
+ //  test_calloc_();
+   test_inotify_FileOrDir();
     //printf("uint =%d,ulong =%d\n",sizeof(unsigned int), sizeof(unsigned long));
 }
 
