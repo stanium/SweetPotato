@@ -397,7 +397,7 @@ int test_inotify_FileOrDir(){
     pollfd1=calloc(1,sizeof(pollfd1[0]));
     pollfd1->fd=inotify_init();
     pollfd1->events=POLLIN;
-    int ret=inotify_add_watch(pollfd1->fd,PATH,IN_CREATE|IN_DELETE);
+    int ret=inotify_add_watch(pollfd1->fd,PATH,IN_CREATE|IN_DELETE|IN_MODIFY);
     if(ret<0){
         printf("could not add watch ,%s\n",strerror(errno));
         return -1;
@@ -413,11 +413,12 @@ int test_inotify_FileOrDir(){
     char eventbuf[512];
     struct inotify_event *event;
     while (1) {
-        printf("nfds 1=%d\n",nfds);
+        printf("nfds =%d\n",nfds);
         poll(pollfd1,nfds,-1);
        // printf("nfds 1=%d\n",nfds);
-        if(pollfd1[0].events&POLLIN) {
+        if(pollfd1[0].revents&POLLIN) {
             printf("can read\n");
+
             ret = read(pollfd1[0].fd, eventbuf, sizeof(eventbuf));
             if (ret < (int) sizeof(*event)) {
                 printf("could not get event,%s\n", strerror(errno));
@@ -434,22 +435,25 @@ int test_inotify_FileOrDir(){
                         printf("event of creatint a new file happen\n");
                         strcpy(filename,event->name);
                         printf("devname=%s\n",devname);
+                        /*
                         int sd=open(devname,O_RDWR);
                         if(sd<0){
                             printf("open fail,%s\n",strerror(errno));
                         }
-                        new_pollfd=(struct pollfd*)realloc(pollfd1, sizeof(pollfd1[0])*(nfds+2));
+                         */
+                        new_pollfd=(struct pollfd*)realloc(pollfd1, sizeof(pollfd1[0])*(nfds+1));
                         if(new_pollfd==NULL){
                             printf("realloc fail\n");
                             continue;
                         }
 
-                        printf("nfds=%d\n",nfds);
+
+                       // printf("nfds=%d\n",nfds);
                         pollfd1=new_pollfd;
-                        pollfd1[nfds].fd=sd;
-                        pollfd1[nfds].events=POLLIN;
-                        nfds++;
-/*
+                       // pollfd1[nfds].fd=sd;
+                       // pollfd1[nfds].events=POLLIN;
+                       // nfds++;
+
                         pollfd1[nfds].fd=inotify_init();
                         pollfd1[nfds].events=POLLIN;
                         ret=inotify_add_watch(pollfd1[nfds].fd,devname,IN_MODIFY);
@@ -459,7 +463,7 @@ int test_inotify_FileOrDir(){
                         //    return -1;
                         }
                         nfds++;
-*/
+
 
                     } else if(event->mask&IN_DELETE){
                         printf("event of deleting a file happen\n");
@@ -470,8 +474,8 @@ int test_inotify_FileOrDir(){
         }
 
         for(int i=1;i<nfds;i++){
-            if(pollfd1[i].events){
-                if(pollfd1[i].events&POLLIN){
+            if(pollfd1[i].revents){
+                if(pollfd1[i].revents&POLLIN){
                     printf("get a new read event,%d\n",i);
                 }
             }
@@ -480,14 +484,65 @@ int test_inotify_FileOrDir(){
 
 }
 
+/**
+ *
+ * @return
+ */
 int test_inotify_File(){
-#define PATH="/home/sine/"
+#define PATH1 "/home/sine/tests/test/1"
+    struct pollfd *pollfd1;
+    struct inotify_event *event;
+    pollfd1=calloc(1,sizeof(pollfd1[0]));
+    pollfd1->fd=inotify_init();
+    pollfd1->events=POLLIN;
+    inotify_add_watch(pollfd1->fd,PATH1,IN_ACCESS);
+    char buf[2048];
+    while (1){
+        poll(pollfd1,1,-1);
+        if(pollfd1[0].revents){
+            if(pollfd1[0].revents&POLLIN){
+                printf("get a event\n");
+                int len=read(pollfd1->fd,buf, sizeof(buf));
+                if(len>0){
+                    event=(struct inofity_event *)buf;
+
+                }
+            }
+        }
+
+    }
 
 }
+
+
+struct str_a{
+    int a;
+};
+
+struct str_b{
+    int b;
+    struct str_a parent;
+
+
+};
+
+int test_p(){
+    struct str_b *n1=(struct str_b *)malloc(sizeof(struct str_b));
+    printf("n1 addr=0x%x,n1->parent addr=0x%x\n",n1,&(n1->parent));
+    struct str_a *n2=(struct str_a *)n1;
+    printf("n2 addr=0x%x\n",n2);
+    n1->b=1;
+    struct str_a *n3=(struct str_a *)n1;
+    //n3.b=1;
+   // printf()
+}
+
 int main(){
    // test_http();
  //  test_calloc_();
-   test_inotify_FileOrDir();
+   //test_inotify_FileOrDir();
+    //test_inotify_File();
+    test_p();
     //printf("uint =%d,ulong =%d\n",sizeof(unsigned int), sizeof(unsigned long));
 }
 

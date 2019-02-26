@@ -14,6 +14,10 @@
 #include "sys/types.h"
 #include "pthread.h"
 #include "sys/select.h"
+#include "sys/un.h"
+#include "sys/ipc.h"
+#include "sys/shm.h"
+
 
 /**
  *
@@ -292,6 +296,52 @@ int server_udp2()
     }
 }
 
+
+int server_local(){
+    int sockfd=socket(AF_UNIX,SOCK_STREAM,0);
+    struct sockaddr_un sun;
+    memset(&sun,0, sizeof(sun));
+    sun.sun_family=AF_UNIX;
+    strcpy(sun.sun_path,"/tmp/test");
+    bind(sockfd,(struct sockaddr *)&sun, sizeof(sun));
+
+    if(listen(sockfd,10)<0){
+        printf("listen failed\n");
+        return -1;
+    }
+
+    fd_set readfd;
+    struct timeval timeval1;
+    int ret;
+    char buf[2048];
+    int shmid;
+    key_t shakey;
+    shmid=shmget(IPC_PRIVATE,1024,IPC_CREAT|IPC_EXCL);
+    if(shmid<0){
+
+    }
+    while (1){
+
+        FD_ZERO(&readfd);
+        FD_SET(sockfd,&readfd);
+        timeval1.tv_sec=5;
+        timeval1.tv_usec=0;
+        ret=select(sockfd,&readfd,NULL,NULL,&timeval1);
+        if(ret<0){
+            printf("select fail\n");
+            continue;
+        } else if(ret==0){
+            printf("select timeout\n");
+            continue;
+        }
+
+        ret=recv(sockfd,buf,2048,0);
+
+
+
+    }
+
+}
 int main(){
    // server_TCP();
     //server_TCP2();
